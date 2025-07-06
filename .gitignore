@@ -1,0 +1,28 @@
+# Virtual environment
+venv/
+*.env
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.Python/
+build/
+dist/
+
+# Django specific
+*.sqlite3
+/media/ # If you plan to store user-uploaded media files
+/static_cdn/ # If you set up a separate static files directory
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
