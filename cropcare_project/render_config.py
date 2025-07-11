@@ -28,7 +28,7 @@ DEBUG = False # Always set to False in production
 
 # Allowed Hosts for Render deployment
 # This will be updated with your actual Render URL after first deployment
-ALLOWED_HOSTS = ['your-render-app-name.onrender.com'] # IMPORTANT: Update this after deployment!
+ALLOWED_HOSTS = ['cropcare-gourav.onrender.com'] # IMPORTANT: Update this after deployment!
 
 
 # Database configuration for Render PostgreSQL
