@@ -128,11 +128,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Import Render-specific settings if running on Render
 # This checks for an environment variable 'RENDER' which is automatically set by Render.
+# Import Render-specific settings if running on Render
+import os
+
 if 'RENDER' in os.environ:
-    # Ensure this path is correct relative to your settings.py
-    # If render_config.py is in the same directory as settings.py
     try:
-        import render_config
+        # Use relative import since render_config.py is in the same directory
+        from . import render_config
         # Apply all settings from render_config.py
         for setting in dir(render_config):
             # Only copy uppercase attributes (which are typically Django settings)
@@ -140,3 +142,11 @@ if 'RENDER' in os.environ:
                 globals()[setting] = getattr(render_config, setting)
     except ImportError:
         print("Warning: render_config.py not found. Ensure it's in the same directory as settings.py for Render deployment.")
+    except Exception as e:
+        # Catch other potential errors during import/application
+        print(f"Error applying render_config: {e}")
+
+# Important: Apply WhiteNoise configuration after importing Render settings
+# For serving static files in production
+# This should be in your MIDDLEWARE in settings.py already
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
