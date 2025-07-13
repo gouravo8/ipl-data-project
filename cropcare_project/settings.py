@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add your Django apps here, e.g.:
     # 'my_app',
+    'agriculture', # Make sure your app is listed here if not already!
 ]
 
 MIDDLEWARE = [
@@ -49,8 +50,10 @@ ROOT_URLCONF = 'cropcare_project.urls' # Ensure this matches your inner project 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates') # This line is important
+        ],
+        'APP_DIRS': True, # THIS IS CRUCIAL for agriculture/templates/agriculture/home_page.html
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -111,10 +114,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT for local development (optional, but good for consistency)
-# This isn't strictly needed for local `runserver` but for `collectstatic` locally.
-STATIC_ROOT = BASE_DIR / 'staticfiles_dev'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Changed to 'staticfiles' for production
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles_dev' # For local media files
@@ -128,9 +128,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Import Render-specific settings if running on Render
 # This checks for an environment variable 'RENDER' which is automatically set by Render.
-# Import Render-specific settings if running on Render
-import os
-
 if 'RENDER' in os.environ:
     try:
         # Use relative import since render_config.py is in the same directory
@@ -146,7 +143,6 @@ if 'RENDER' in os.environ:
         # Catch other potential errors during import/application
         print(f"Error applying render_config: {e}")
 
-# Important: Apply WhiteNoise configuration after importing Render settings
-# For serving static files in production
-# This should be in your MIDDLEWARE in settings.py already
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoise configuration for serving static files in production
+# This should be after the Render settings import, as Render settings might override some things.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
