@@ -11,13 +11,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Default to an insecure key for local development. This will be overridden by Render.
+# Default to an insecure key for local development.
+# IMPORTANT: For production, you MUST use an environment variable for SECRET_KEY.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-k3+j!&x_#g*d9^!m!^7e2q#3k&d(o3r*@1b_1l-2q5o_6p7s8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # Keep True for local development, will be False on Render
+DEBUG = True # Keep True for local development
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] # Only for local development
+# Allowed hosts for local development
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -29,14 +31,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Add your Django apps here, e.g.:
-    # 'my_app',
-    'agriculture', # Make sure your app is listed here if not already!
+    # Add your Django apps here, e'g':
+    'agriculture', # Make sure your app is listed here!
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Add this line for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Add this line for static files (good practice even locally with collectstatic)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,9 +52,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates') # This line is important
+            os.path.join(BASE_DIR, 'templates') # This line is important for project-level templates
         ],
-        'APP_DIRS': True, # THIS IS CRUCIAL for agriculture/templates/agriculture/home_page.html
+        'APP_DIRS': True, # THIS IS CRUCIAL for app-specific templates (like agriculture/templates/agriculture/...)
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -114,7 +115,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Changed to 'staticfiles' for production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Collects static files here
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles_dev' # For local media files
@@ -125,24 +126,5 @@ MEDIA_ROOT = BASE_DIR / 'mediafiles_dev' # For local media files
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Import Render-specific settings if running on Render
-# This checks for an environment variable 'RENDER' which is automatically set by Render.
-if 'RENDER' in os.environ:
-    try:
-        # Use relative import since render_config.py is in the same directory
-        from . import render_config
-        # Apply all settings from render_config.py
-        for setting in dir(render_config):
-            # Only copy uppercase attributes (which are typically Django settings)
-            if setting.isupper():
-                globals()[setting] = getattr(render_config, setting)
-    except ImportError:
-        print("Warning: render_config.py not found. Ensure it's in the same directory as settings.py for Render deployment.")
-    except Exception as e:
-        # Catch other potential errors during import/application
-        print(f"Error applying render_config: {e}")
-
-# WhiteNoise configuration for serving static files in production
-# This should be after the Render settings import, as Render settings might override some things.
+# WhiteNoise configuration for serving static files (even locally with 'collectstatic')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
