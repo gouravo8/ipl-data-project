@@ -106,3 +106,58 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media files (user-uploaded content)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles_dev'
+
+    # C:\Users\Gourav Rajput\CropCareConnect\cropcare_project\settings.py
+
+    # ... (your existing settings code above this) ...
+
+    # Logging configuration for production
+    LOGGING = {
+        'version': 1, # Specifies the version of the logging configuration schema
+        'disable_existing_loggers': False, # Don't disable existing loggers (like Django's default ones)
+        'formatters': { # Define how log messages will be formatted
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+                'style': '{',
+            },
+            'simple': { # A simpler format for console output
+                'format': '{levelname} {message}',
+            },
+        },
+        'filters': { # Optional: Define filters for logs
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue',
+            },
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse',
+            },
+        },
+        'handlers': { # Define where log messages will go
+            'console': { # Handler for printing logs to the console (stdout/stderr)
+                'level': 'INFO', # Minimum level of messages to handle (INFO, WARNING, ERROR, CRITICAL)
+                'filters': ['require_debug_true'] if DEBUG else ['require_debug_false'], # Only show in console if DEBUG is False
+                'class': 'logging.StreamHandler', # Sends logs to console
+                'formatter': 'verbose' if DEBUG else 'simple', # Use verbose format in debug, simple in production
+            },
+            # You could add other handlers here, e.g., 'file' for logging to a file,
+            # or 'mail_admins' for sending error emails.
+        },
+        'loggers': { # Define loggers for specific parts of your application or Django
+            'django': { # The main Django logger
+                'handlers': ['console'], # Send Django logs to the console handler
+                'level': 'INFO', # Log all messages from INFO level and above
+                'propagate': False, # Don't pass messages to parent loggers
+            },
+            'django.request': { # Logger specifically for HTTP requests (including 500 errors)
+                'handlers': ['console'],
+                'level': 'ERROR', # Only log errors for requests
+                'propagate': False,
+            },
+            '': { # The root logger: catches messages not handled by specific loggers
+                'handlers': ['console'],
+                'level': 'INFO', # Default level for your own application logs
+                'propagate': False,
+            },
+        }
+    }
+    
