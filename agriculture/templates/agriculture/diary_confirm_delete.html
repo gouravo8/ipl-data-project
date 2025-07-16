@@ -1,0 +1,142 @@
+{# C:\Users\Gourav Rajput\CropCareConnect\agriculture\templates\agriculture\diary_confirm_delete.html #}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Delete - CropCareConnect</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="{% static 'agriculture/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'agriculture/android-chrome-192x192.png' %}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #333;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Subtle fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation Bar (Consistent with other pages) -->
+    <nav class="bg-green-700 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'agriculture:home_page' %}" class="text-white text-2xl font-bold tracking-wide">
+                CropCareConnect
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <!-- Home button for desktop -->
+                <a href="{% url 'agriculture:home_page' %}" class="text-white hover:text-green-200 transition duration-300">
+                    <i class="fas fa-home mr-1"></i> Home
+                </a>
+                <a href="{% url 'agriculture:market_price_list' %}" class="text-white hover:text-green-200 transition duration-300">Market Prices</a>
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="text-white hover:text-green-200 transition duration-300">Advisories</a>
+                <a href="{% url 'agriculture:realtime_weather' %}" class="text-white hover:text-green-200 transition duration-300">Real-time Weather</a>
+                <a href="{% url 'agriculture:weather_forecast' %}" class="text-white hover:text-green-200 transition duration-300">Weather Forecast</a>
+                <a href="{% url 'agriculture:diary_list' %}" class="text-white hover:text-green-200 transition duration-300">Farmer Diary</a>
+            </div>
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+            <!-- Home button for mobile -->
+            <a href="{% url 'agriculture:home_page' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="{% url 'agriculture:market_price_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Market Prices</a>
+            <a href="{% url 'agriculture:crop_advisory_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Advisories</a>
+            <a href="{% url 'agriculture:realtime_weather' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Real-time Weather</a>
+            <a href="{% url 'agriculture:weather_forecast' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Weather Forecast</a>
+            <a href="{% url 'agriculture:diary_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Farmer Diary</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto py-12 px-4 flex flex-col items-center">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8 fade-in-section">{{ title }}</h1>
+
+        <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md text-center fade-in-section delay-1">
+            <div class="text-red-500 text-8xl mb-6">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Are you sure you want to delete this entry?</h2>
+            <p class="text-lg text-gray-600 mb-6">
+                This action cannot be undone. You are about to delete the diary entry for:
+                <br>
+                <strong class="text-gray-900">{{ entry.crop_type }} - {{ entry.event_description }} on {{ entry.event_date|date:"F j, Y" }}</strong>
+            </p>
+
+            <form method="post" class="flex justify-center space-x-4">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full 
+                                           shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75">
+                    <i class="fas fa-trash-alt mr-2"></i> Confirm Delete
+                </button>
+                <a href="{% url 'agriculture:diary_detail' pk=entry.pk %}" class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full 
+                                                                       shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                                                       focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75">
+                    <i class="fas fa-times-circle mr-2"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </main>
+
+    <!-- Simple Footer (Consistent with other pages) -->
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <div class="container mx-auto">
+            <p>&copy; {{ "now"|date:"Y" }} CropCareConnect. All rights reserved.</p>
+            <p class="text-sm mt-2">Designed for the modern farmer.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

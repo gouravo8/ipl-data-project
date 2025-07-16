@@ -1,106 +1,281 @@
 {# C:\Users\Gourav Rajput\CropCareConnect\agriculture\templates\agriculture\crop_advisory_list.html #}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ title }} - CropCareConnect</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="{% static 'agriculture/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'agriculture/android-chrome-192x192.png' %}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Basic styling for readability */
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
             color: #333;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
         }
-        .advisory-item {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #fdfdfd;
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
         }
-        .advisory-item h2 {
-            color: #3498db;
-            margin-top: 0;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
         }
-        .advisory-item p {
-            line-height: 1.6;
+
+        /* Subtle fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
         }
-        .advisory-item strong {
-            color: #555;
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .advisory-type {
-            background-color: #e0f2f7;
-            color: #007bb6;
-            padding: 5px 10px;
-            border-radius: 3px;
-            font-size: 0.85em;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        /* Styles for collapsible content */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
-        .advisory-date {
-            font-size: 0.8em;
-            color: #777;
-            margin-bottom: 10px;
-        }
-        .back-link {
-            display: block;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .back-link a {
-            color: #2c3e50;
-            text-decoration: none;
-            padding: 10px 15px;
-            border: 1px solid #2c3e50;
-            border-radius: 5px;
-        }
-        .back-link a:hover {
-            background-color: #2c3e50;
-            color: #fff;
+        .collapsible-content.active {
+            max-height: 500px; /* Adjust as needed for content length */
+            transition: max-height 0.5s ease-in;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>{{ title }}</h1>
+<body class="min-h-screen flex flex-col">
 
-        {% if advisories %}
-            {% for advisory in advisories %}
-                <div class="advisory-item">
-                    <span class="advisory-type">{{ advisory.get_advisory_type_display }}</span>
-                    <h2 class="advisory-title">{{ advisory.title }}</h2>
-                    <p class="advisory-date">Published: {{ advisory.date_published|date:"F j, Y" }}</p>
-                    <p><strong>Crop:</strong> {{ advisory.crop_name }}</p>
-                    <p><strong>Description:</strong> {{ advisory.description }}</p>
-                    {% if advisory.recommendation %}
-                        <p><strong>Recommendation:</strong> {{ advisory.recommendation }}</p>
+    <!-- Navigation Bar (Consistent with other pages) -->
+    <nav class="bg-green-700 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'agriculture:home_page' %}" class="text-white text-2xl font-bold tracking-wide">
+                CropCareConnect
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <!-- Home button for desktop -->
+                <a href="{% url 'agriculture:home_page' %}" class="text-white hover:text-green-200 transition duration-300">
+                    <i class="fas fa-home mr-1"></i> Home
+                </a>
+                <a href="{% url 'agriculture:market_price_list' %}" class="text-white hover:text-green-200 transition duration-300">Market Prices</a>
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="text-white hover:text-green-200 transition duration-300">Advisories</a> {# Highlight current page #}
+                <a href="{% url 'agriculture:realtime_weather' %}" class="text-white hover:text-green-200 transition duration-300">Real-time Weather</a>
+                <a href="{% url 'agriculture:weather_forecast' %}" class="text-white hover:text-green-200 transition duration-300">Weather Forecast</a>
+                <a href="{% url 'agriculture:diary_list' %}" class="text-white hover:text-green-200 transition duration-300">Farmer Diary</a>
+            </div>
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+            <!-- Home button for mobile -->
+            <a href="{% url 'agriculture:home_page' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="{% url 'agriculture:market_price_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Market Prices</a>
+            <a href="{% url 'agriculture:crop_advisory_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Advisories</a>
+            <a href="{% url 'agriculture:realtime_weather' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Real-time Weather</a>
+            <a href="{% url 'agriculture:weather_forecast' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Weather Forecast</a>
+            <a href="{% url 'agriculture:diary_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Farmer Diary</a>
+        </div>
+    </nav>
+
+    <!-- Header Section with Advisory Theme -->
+    <header class="relative bg-cover bg-center h-[30vh] md:h-[40vh] flex items-center justify-center text-white shadow-inner"
+            style="background-image: url('https://images.unsplash.com/photo-1579603541416-86c5e6d6b6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTMzNXwwfDF8c2VhcmNofDI4fHxhZ3JpY3VsdHVyZSUyMHdhcm5pbmd8ZW58MHx8fHwxNzAxNDI4Nzg4fDA&ixlib=rb-4.0.3&q=80&w=1080');">
+        <div class="absolute inset-0 bg-black opacity-50"></div> <!-- Overlay for text readability -->
+        <div class="relative z-10 text-center p-6 fade-in-section">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2 leading-tight">
+                <i class="fas fa-bell mr-3"></i> {{ title }}
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto">
+                Stay informed with the latest agricultural advisories and critical alerts.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto py-12 px-4">
+        <!-- Filter Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 fade-in-section delay-1">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Filter Advisories</h2>
+            <form method="GET" action="{% url 'agriculture:crop_advisory_list' %}" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div class="flex items-center w-full sm:w-auto">
+                    <label for="alert_type_filter" class="block text-gray-700 text-sm font-bold mr-2">
+                        <i class="fas fa-tags mr-1"></i> Filter by Type:
+                    </label>
+                    <select name="alert_type" id="alert_type_filter" class="shadow appearance-none border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 w-full sm:w-auto">
+                        <option value="">All Types</option>
+                        {% for type in unique_alert_types %}
+                            <option value="{{ type }}" {% if type == selected_type %}selected{% endif %}>{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex space-x-2 w-full sm:w-auto justify-center">
+                    <button type="submit" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-5 rounded-lg 
+                                               transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                        <i class="fas fa-filter mr-2"></i> Apply Filter
+                    </button>
+                    {% if selected_type %}
+                        <a href="{% url 'agriculture:crop_advisory_list' %}" class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-5 rounded-lg 
+                                                                               transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                            <i class="fas fa-times-circle mr-2"></i> Reset Filter
+                        </a>
                     {% endif %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No crop advisories available at the moment.</p>
-        {% endif %}
-
-        <div class="back-link">
-            <a href="{% url 'agriculture:market_price_list' %}">Back to Market Prices</a>
+            </form>
         </div>
-    </div>
+
+        <!-- Advisories Display -->
+        {% if advisories %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for advisory in advisories %}
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-800">
+                                    {# Dynamic Icon based on alert_type #}
+                                    {% if advisory.alert_type == 'Weather' %}
+                                        <i class="fas fa-cloud-sun-rain text-blue-500 mr-2"></i>
+                                    {% elif advisory.alert_type == 'Pest' %}
+                                        <i class="fas fa-bug text-red-500 mr-2"></i>
+                                    {% elif advisory.alert_type == 'Disease' %}
+                                        <i class="fas fa-disease text-purple-500 mr-2"></i>
+                                    {% elif advisory.alert_type == 'Price' %}
+                                        <i class="fas fa-chart-line text-green-500 mr-2"></i>
+                                    {% elif advisory.alert_type == 'Fertilizer' %}
+                                        <i class="fas fa-flask text-yellow-600 mr-2"></i>
+                                    {% elif advisory.alert_type == 'Irrigation' %}
+                                        <i class="fas fa-water text-blue-400 mr-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                                    {% endif %}
+                                    {{ advisory.title }}
+                                </h3>
+                                {# Severity Badge #}
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold
+                                    {% if advisory.severity == 'Red' %} bg-red-200 text-red-800
+                                    {% elif advisory.severity == 'Yellow' %} bg-yellow-200 text-yellow-800
+                                    {% else %} bg-green-200 text-green-800
+                                    {% endif %}">
+                                    {{ advisory.get_severity_display }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-3">
+                                <i class="fas fa-calendar-alt mr-1"></i> Published: {{ advisory.date_published|date:"F j, Y" }}
+                                {% if advisory.location %}<span class="ml-4"><i class="fas fa-map-marker-alt mr-1"></i> {{ advisory.location }}</span>{% endif %}
+                            </p>
+                            <p class="text-gray-700 mb-4 line-clamp-3" id="summary-{{ advisory.pk }}">{{ advisory.content|truncatechars:150 }}</p>
+                            
+                            <!-- Collapsible Content -->
+                            <div id="collapsible-{{ advisory.pk }}" class="collapsible-content">
+                                <p class="text-gray-700 pb-4">{{ advisory.content }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
+                            <button class="toggle-button text-blue-500 hover:text-blue-700 font-semibold transition duration-200"
+                                    data-target="collapsible-{{ advisory.pk }}" data-summary="summary-{{ advisory.pk }}">
+                                Read More <i class="fas fa-chevron-down ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Advisories Found Section -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center mt-12 fade-in-section delay-2">
+                <div class="text-blue-400 text-8xl mb-6">
+                    <i class="fas fa-cloud-sun-rain animate-pulse"></i> {# Weather/Advisory themed icon #}
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">No Advisories Available Yet!</h2>
+                <p class="text-lg text-gray-600 mb-6">
+                    We are constantly updating our advisory database. Please check back later for the latest crop advisories and alerts.
+                </p>
+                <a href="{% url 'agriculture:home_page' %}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full 
+                                           shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75">
+                    <i class="fas fa-home mr-3"></i> Back to Home
+                </a>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Simple Footer (Consistent with other pages) -->
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <div class="container mx-auto">
+            <p>&copy; {{ "now"|date:"Y" }} CropCareConnect. All rights reserved.</p>
+            <p class="text-sm mt-2">Designed for the modern farmer.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle and Collapsible Cards -->
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Collapsible Cards Logic
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                const summaryId = button.dataset.summary;
+                const targetContent = document.getElementById(targetId);
+                const summaryContent = document.getElementById(summaryId);
+                const icon = button.querySelector('i');
+
+                if (targetContent.classList.contains('active')) {
+                    targetContent.classList.remove('active');
+                    summaryContent.style.display = 'block'; // Show summary when collapsed
+                    button.innerHTML = 'Read More <i class="fas fa-chevron-down ml-1"></i>';
+                } else {
+                    targetContent.classList.add('active');
+                    summaryContent.style.display = 'none'; // Hide summary when expanded
+                    button.innerHTML = 'Read Less <i class="fas fa-chevron-up ml-1"></i>';
+                }
+            });
+        });
+
+        // Initialize display for summary/full content on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.collapsible-content').forEach(content => {
+                const summaryId = content.id.replace('collapsible-', 'summary-');
+                const summaryElement = document.getElementById(summaryId);
+                // If content is short, hide the "Read More" button
+                if (summaryElement && summaryElement.scrollHeight <= summaryElement.clientHeight + 5) { // +5 for slight tolerance
+                    const button = document.querySelector(`.toggle-button[data-target="${content.id}"]`);
+                    if (button) {
+                        button.style.display = 'none';
+                    }
+                    summaryElement.classList.remove('line-clamp-3'); // Remove line clamp if no button
+                }
+            });
+        });
+    </script>
 </body>
 </html>

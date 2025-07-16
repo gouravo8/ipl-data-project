@@ -1,4 +1,5 @@
 {# C:\Users\Gourav Rajput\CropCareConnect\agriculture\templates\agriculture\home_page.html #}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,80 +7,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="{% static 'agriculture/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'agriculture/android-chrome-192x192.png' %}">
+    <!-- Tailwind CSS CDN - Ensures modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons (optional, but recommended for visual appeal) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f4;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Light background */
             color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling during splash screen */
         }
-        .container {
-            text-align: center;
-            padding: 20px;
-            max-width: 960px; /* Max width for content */
-            width: 100%;
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 40px;
-        }
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
-            gap: 30px; /* Space between boxes */
-            justify-content-items: center; /* Center boxes in grid cells */
-        }
-        .option-box {
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none; /* Remove underline from link */
-            color: inherit; /* Inherit text color */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Subtle fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Delay for sequential fade-in (optional, can be applied with JS or more complex CSS) */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* --- Splash Screen Styles and Animations --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff; /* WHITE background for splash screen */
+            z-index: 9999; /* Ensure it's on top */
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-            min-height: 200px; /* Ensure boxes are somewhat square */
-            max-width: 350px; /* Max width for individual boxes */
-            width: 100%; /* Take full width of grid column */
+            justify-content: center;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 0.5s ease-out; /* Smooth fade out */
         }
-        .option-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none; /* Make it unclickable after fading out */
         }
-        .option-box h2 {
-            color: #3498db;
-            margin-top: 0;
-            font-size: 1.8em;
-            margin-bottom: 15px;
+
+        /* Animation for the logo image */
+        .animated-logo {
+            transform: scale(0.5);
+            opacity: 0;
+            animation: logo-zoom-fade-in 2.5s ease-out forwards; /* Logo animation (2.5 seconds) */
+            max-width: 80%; /* Ensure responsiveness */
+            height: auto; /* Maintain aspect ratio */
+            /* Add a subtle shadow to make the logo pop on white background if needed */
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         }
-        .option-box p {
-            font-size: 1em;
-            color: #555;
-            margin-bottom: 0;
+
+        @keyframes logo-zoom-fade-in {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Initially hide main content */
+        #main-content {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>{{ title }}</h1>
 
-        <div class="options-grid">
-            {% for option in options %}
-                <a href="{% url option.url_name %}" class="option-box">
-                    <h2>{{ option.name }}</h2>
-                    <p>{{ option.description }}</p>
-                </a>
-            {% endfor %}
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo-container text-white text-center">
+            <!-- Your actual logo image -->
+            <img src="{% static 'agriculture/f637ca5c-58da-4bf3-9584-e7c6dcc3de22.png' %}" alt="CropCareConnect Logo" class="animated-logo mx-auto">
         </div>
     </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content">
+        <!-- Navigation Bar -->
+        <nav class="bg-green-700 p-4 shadow-md">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="{% url 'agriculture:home_page' %}" class="text-white text-2xl font-bold tracking-wide">
+                    CropCareConnect
+                </a>
+                <div class="hidden md:flex space-x-6">
+                    <!-- Home button for desktop -->
+                    <a href="{% url 'agriculture:home_page' %}" class="text-white hover:text-green-200 transition duration-300">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="{% url 'agriculture:market_price_list' %}" class="text-white hover:text-green-200 transition duration-300">Market Prices</a>
+                    <a href="{% url 'agriculture:crop_advisory_list' %}" class="text-white hover:text-green-200 transition duration-300">Advisories</a>
+                    <a href="{% url 'agriculture:realtime_weather' %}" class="text-white hover:text-green-200 transition duration-300">Real-time Weather</a>
+                    <a href="{% url 'agriculture:weather_forecast' %}" class="text-white hover:text-green-200 transition duration-300">Weather Forecast</a>
+                    <a href="{% url 'agriculture:diary_list' %}" class="text-white hover:text-green-200 transition duration-300">Farmer Diary</a>
+                </div>
+                <!-- Mobile Menu Button (Hamburger) -->
+                <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+            <!-- Mobile Menu (Hidden by default) -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                <!-- Home button for mobile -->
+                <a href="{% url 'agriculture:home_page' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">
+                    <i class="fas fa-home mr-2"></i> Home
+                </a>
+                <a href="{% url 'agriculture:market_price_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Market Prices</a>
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Advisories</a>
+                <a href="{% url 'agriculture:realtime_weather' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Real-time Weather</a>
+                <a href="{% url 'agriculture:weather_forecast' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Weather Forecast</a>
+                <a href="{% url 'agriculture:diary_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Farmer Diary</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="relative bg-cover bg-center h-[60vh] md:h-[70vh] flex items-center justify-center text-white shadow-inner"
+                style="background-image: url('https://images.unsplash.com/photo-1534000305842-83b65287d377?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTMzNXwwfDF8c2VhcmNofDE5fHxmYXJtaW5nfGVufDB8fHx8MTcwMTQyNjM5MHww&ixlib=rb-4.0.3&q=80&w=1080');">
+            <div class="absolute inset-0 bg-black opacity-50"></div> <!-- Overlay for text readability -->
+            <div class="relative z-10 text-center p-6 fade-in-section">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
+                    Empowering Farmers with Smart Insights
+                </h1>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8">
+                    Your one-stop platform for real-time market prices, crop advisories, weather updates, and personal farming records.
+                </p>
+                <a href="{% url 'agriculture:diary_create' %}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Start Your Farmer Diary
+                </a>
+            </div>
+        </header>
+
+        <!-- Features Section (as requested) -->
+        <main class="flex-grow container mx-auto py-16 px-4 fade-in-section delay-1">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Our Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+                {# Feature 1: Market Prices #}
+                <a href="{% url 'agriculture:market_price_list' %}" class="block">
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center h-full 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-chart-line"></i> {# Upward graph icon #}
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Market Prices</h3>
+                        <p class="text-gray-600 text-base flex-grow">Check daily market prices for various commodities.</p>
+                        <button class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg 
+                                       transition duration-300 ease-in-out transform hover:scale-105">
+                            Explore
+                        </button>
+                    </div>
+                </a>
+
+                {# Feature 2: Crop Advisories & Alerts #}
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="block">
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center h-full 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-bell"></i> {# Bell icon #}
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Crop Advisories & Alerts</h3>
+                        <p class="text-gray-600 text-base flex-grow">Get advisories on diseases, pests, and best farming practices.</p>
+                        <button class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg 
+                                       transition duration-300 ease-in-out transform hover:scale-105">
+                            Explore
+                        </button>
+                    </div>
+                </a>
+
+                {# Feature 3: Real-time Weather #}
+                <a href="{% url 'agriculture:realtime_weather' %}" class="block">
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center h-full 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-cloud-sun-rain"></i> {# Cloud with rain and sun icon #}
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Real-time Weather</h3>
+                        <p class="text-gray-600 text-base flex-grow">Get live temperature, humidity, and rain status for your city.</p>
+                        <button class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg 
+                                       transition duration-300 ease-in-out transform hover:scale-105">
+                            Explore
+                        </button>
+                    </div>
+                </a>
+
+                {# Feature 4: Weather Forecast #}
+                <a href="{% url 'agriculture:weather_forecast' %}" class="block">
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center h-full 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-calendar-alt"></i> {# Calendar icon #}
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Weather Forecast</h3>
+                        <p class="text-gray-600 text-base flex-grow">Get future weather predictions for any date and city.</p>
+                        <button class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg 
+                                       transition duration-300 ease-in-out transform hover:scale-105">
+                            Explore
+                        </button>
+                    </div>
+                </a>
+
+                {# Feature 5: Farmer Diary #}
+                <a href="{% url 'agriculture:diary_list' %}" class="block">
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center h-full 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div class="text-5xl text-green-600 mb-4">
+                            <i class="fas fa-book-open"></i> {# Open book icon #}
+                        </div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Farmer Diary</h3>
+                        <p class="text-gray-600 text-base flex-grow">Record your farming events, inputs, and expenses over time.</p>
+                        <button class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg 
+                                       transition duration-300 ease-in-out transform hover:scale-105">
+                            Explore
+                        </button>
+                    </div>
+                </a>
+            </div>
+        </main>
+
+        <!-- Simple Footer -->
+        <footer class="bg-gray-800 text-white text-center p-6 mt-12 fade-in-section delay-2">
+            <div class="container mx-auto">
+                <p>&copy; {{ "now"|date:"Y" }} CropCareConnect. All rights reserved.</p>
+                <p class="text-sm mt-2">Designed for the modern farmer.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript for Mobile Menu Toggle and Splash Screen -->
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Splash Screen Logic
+        window.addEventListener('load', function() {
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.getElementById('main-content');
+            const body = document.body;
+
+            // Total animation duration for logo zoom/fade-in
+            const animationDuration = 2500; // 2.5 seconds (within 2-3 second range)
+
+            setTimeout(() => {
+                splashScreen.classList.add('hidden'); // Start fading out splash screen
+                
+                // After splash screen transition ends, hide it completely and show main content
+                splashScreen.addEventListener('transitionend', () => {
+                    splashScreen.style.display = 'none'; // Remove from layout
+                    mainContent.style.display = 'block'; // Show main content
+                    body.style.overflow = 'auto'; // Re-enable scrolling
+                }, { once: true }); // Ensure this listener runs only once
+            }, animationDuration);
+        });
+    </script>
 </body>
 </html>

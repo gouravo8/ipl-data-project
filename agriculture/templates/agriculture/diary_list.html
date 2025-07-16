@@ -1,0 +1,264 @@
+{# C:\Users\Gourav Rajput\CropCareConnect\agriculture\templates\agriculture\diary_list.html #}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - CropCareConnect</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="{% static 'agriculture/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'agriculture/android-chrome-192x192.png' %}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #333;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Subtle fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation Bar (Consistent with other pages) -->
+    <nav class="bg-green-700 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'agriculture:home_page' %}" class="text-white text-2xl font-bold tracking-wide">
+                CropCareConnect
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <!-- Home button for desktop -->
+                <a href="{% url 'agriculture:home_page' %}" class="text-white hover:text-green-200 transition duration-300">
+                    <i class="fas fa-home mr-1"></i> Home
+                </a>
+                <a href="{% url 'agriculture:market_price_list' %}" class="text-white hover:text-green-200 transition duration-300">Market Prices</a>
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="text-white hover:text-green-200 transition duration-300">Advisories</a>
+                <a href="{% url 'agriculture:realtime_weather' %}" class="text-white hover:text-green-200 transition duration-300">Real-time Weather</a>
+                <a href="{% url 'agriculture:weather_forecast' %}" class="text-white hover:text-green-200 transition duration-300">Weather Forecast</a>
+                <a href="{% url 'agriculture:diary_list' %}" class="text-white hover:text-green-200 transition duration-300">Farmer Diary</a> {# Highlight current page #}
+            </div>
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+            <!-- Home button for mobile -->
+            <a href="{% url 'agriculture:home_page' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="{% url 'agriculture:market_price_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Market Prices</a>
+            <a href="{% url 'agriculture:crop_advisory_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Advisories</a>
+            <a href="{% url 'agriculture:realtime_weather' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Real-time Weather</a>
+            <a href="{% url 'agriculture:weather_forecast' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Weather Forecast</a>
+            <a href="{% url 'agriculture:diary_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Farmer Diary</a>
+        </div>
+    </nav>
+
+    <!-- Header Section with Farming Theme -->
+    <header class="relative bg-cover bg-center h-[30vh] md:h-[40vh] flex items-center justify-center text-white shadow-inner"
+            style="background-image: url('https://images.unsplash.com/photo-1517596006093-9c7f6b9b3e1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTMzNXwwfDF8c2VhcmNofDIyfHxmYXJtaW5nJTIwZGlhcnl8ZW58MHx8fHwxNzAxNDI3NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080');">
+        <div class="absolute inset-0 bg-black opacity-50"></div> <!-- Overlay for text readability -->
+        <div class="relative z-10 text-center p-6 fade-in-section">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2 leading-tight">
+                <i class="fas fa-book-open mr-3"></i> {{ title }}
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto">
+                Keep track of all your farming activities, expenses, and observations.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto py-12 px-4">
+        <!-- Messages Section -->
+        {% if messages %}
+            <div class="mb-8 fade-in-section delay-1">
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg font-bold text-center mb-2
+                        {% if message.tags == 'success' %} bg-green-100 text-green-800 border border-green-300
+                        {% elif message.tags == 'error' %} bg-red-100 text-red-800 border border-red-300
+                        {% else %} bg-blue-100 text-blue-800 border border-blue-300
+                        {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Action Button: Add New Entry -->
+        <div class="text-center mb-8 fade-in-section delay-2">
+            <a href="{% url 'agriculture:diary_create' %}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full 
+                                           shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75">
+                <i class="fas fa-plus-circle mr-3"></i> Add New Entry
+            </a>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 fade-in-section delay-3">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Filter Diary Entries</h2>
+            <form method="GET" action="{% url 'agriculture:diary_list' %}" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div class="flex items-center w-full sm:w-auto">
+                    <label for="crop_type_filter" class="block text-gray-700 text-sm font-bold mr-2">
+                        <i class="fas fa-seedling mr-1"></i> Filter by Crop:
+                    </label>
+                    <select name="crop_type" id="crop_type_filter" class="shadow appearance-none border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 w-full sm:w-auto">
+                        <option value="">All Crops</option>
+                        {% for crop in unique_crop_types %}
+                            <option value="{{ crop }}" {% if crop == selected_crop_type %}selected{% endif %}>{{ crop }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex space-x-2 w-full sm:w-auto justify-center">
+                    <button type="submit" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-5 rounded-lg 
+                                               transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                        <i class="fas fa-filter mr-2"></i> Apply Filter
+                    </button>
+                    {% if selected_crop_type %}
+                        <a href="{% url 'agriculture:diary_list' %}" class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-5 rounded-lg 
+                                                                               transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                            <i class="fas fa-times-circle mr-2"></i> Reset Filter
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Diary Entries Display -->
+        {% if page_obj %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for entry in page_obj %}
+                    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between 
+                                transform transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                <i class="fas fa-calendar-alt text-green-500 mr-2"></i> {{ entry.event_date|date:"F j, Y" }}
+                            </h3>
+                            <p class="text-lg text-gray-700 mb-2">
+                                <i class="fas fa-seedling text-yellow-600 mr-2"></i> Crop: <span class="font-semibold">{{ entry.crop_type }}</span>
+                            </p>
+                            <p class="text-gray-600 mb-4 line-clamp-3">{{ entry.event_description }}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
+                            <span class="text-xl font-bold text-red-600">
+                                <i class="fas fa-rupee-sign mr-1"></i> {{ entry.total_expenses|floatformat:2 }}
+                            </span>
+                            <div class="flex space-x-2">
+                                <a href="{% url 'agriculture:diary_detail' pk=entry.pk %}" class="text-blue-500 hover:text-blue-700 transition duration-200" title="View Details">
+                                    <i class="fas fa-eye text-lg"></i>
+                                </a>
+                                <a href="{% url 'agriculture:diary_update' pk=entry.pk %}" class="text-yellow-500 hover:text-yellow-700 transition duration-200" title="Edit Entry">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </a>
+                                <a href="{% url 'agriculture:diary_delete' pk=entry.pk %}" class="text-red-500 hover:text-red-700 transition duration-200" title="Delete Entry">
+                                    <i class="fas fa-trash-alt text-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <nav class="flex justify-center items-center space-x-2 mt-10" aria-label="Pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if selected_crop_type %}&crop_type={{ selected_crop_type }}{% endif %}"
+                       class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <i class="fas fa-chevron-left mr-2"></i> Previous
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2"></i> Previous
+                    </span>
+                {% endif %}
+
+                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if selected_crop_type %}&crop_type={{ selected_crop_type }}{% endif %}"
+                       class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition duration-150 ease-in-out">
+                        Next <i class="fas fa-chevron-right ml-2"></i>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
+                        Next <i class="fas fa-chevron-right ml-2"></i>
+                    </span>
+                {% endif %}
+            </nav>
+
+        {% else %}
+            <!-- No Entries Found Section -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center mt-12 fade-in-section delay-3">
+                <div class="text-green-500 text-8xl mb-6">
+                    <i class="fas fa-tractor animate-bounce"></i> {# Farming-themed icon #}
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">No Diary Entries Yet!</h2>
+                <p class="text-lg text-gray-600 mb-6">
+                    It looks like your farmer's diary is empty. Start by adding your first farming event, expenses, or observations.
+                </p>
+                <a href="{% url 'agriculture:diary_create' %}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full 
+                                           shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75">
+                    <i class="fas fa-plus-circle mr-3"></i> Add Your First Entry
+                </a>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Simple Footer (Consistent with other pages) -->
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <div class="container mx-auto">
+            <p>&copy; {{ "now"|date:"Y" }} CropCareConnect. All rights reserved.</p>
+            <p class="text-sm mt-2">Designed for the modern farmer.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

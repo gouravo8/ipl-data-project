@@ -1,0 +1,266 @@
+{# C:\Users\Gourav Rajput\CropCareConnect\agriculture\templates\agriculture\weather_forecast.html #}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast - CropCareConnect</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="{% static 'agriculture/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'agriculture/android-chrome-192x192.png' %}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #333;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Subtle fade-in animation for sections */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation Bar (Consistent with Home Page) -->
+    <nav class="bg-green-700 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'agriculture:home_page' %}" class="text-white text-2xl font-bold tracking-wide">
+                CropCareConnect
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <!-- Home button for desktop -->
+                <a href="{% url 'agriculture:home_page' %}" class="text-white hover:text-green-200 transition duration-300">
+                    <i class="fas fa-home mr-1"></i> Home
+                </a>
+                <a href="{% url 'agriculture:market_price_list' %}" class="text-white hover:text-green-200 transition duration-300">Market Prices</a>
+                <a href="{% url 'agriculture:crop_advisory_list' %}" class="text-white hover:text-green-200 transition duration-300">Advisories</a>
+                <a href="{% url 'agriculture:realtime_weather' %}" class="text-white hover:text-green-200 transition duration-300">Real-time Weather</a>
+                <a href="{% url 'agriculture:weather_forecast' %}" class="text-white hover:text-green-200 transition duration-300">Weather Forecast</a> {# Highlight current page #}
+                <a href="{% url 'agriculture:diary_list' %}" class="text-white hover:text-green-200 transition duration-300">Farmer Diary</a>
+            </div>
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+            <!-- Home button for mobile -->
+            <a href="{% url 'agriculture:home_page' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="{% url 'agriculture:market_price_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Market Prices</a>
+            <a href="{% url 'agriculture:crop_advisory_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Advisories</a>
+            <a href="{% url 'agriculture:realtime_weather' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Real-time Weather</a>
+            <a href="{% url 'agriculture:weather_forecast' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Weather Forecast</a>
+            <a href="{% url 'agriculture:diary_list' %}" class="block text-white px-4 py-2 hover:bg-green-600 rounded">Farmer Diary</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto py-12 px-4 flex flex-col items-center">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8 fade-in-section">Future Weather Forecast</h1>
+
+        <!-- Input Form Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8 w-full max-w-md fade-in-section delay-1">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Get Forecast for a Date</h2>
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.city_name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ form.city_name.label }}:
+                    </label>
+                    <input type="text" name="{{ form.city_name.name }}" id="{{ form.city_name.id_for_label }}"
+                           value="{{ form.city_name.value|default:'' }}" placeholder="{{ form.city_name.field.widget.attrs.placeholder }}"
+                           class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight 
+                                  focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent 
+                                  transition duration-300 ease-in-out text-lg">
+                    {% if form.city_name.errors %}
+                        <p class="text-red-500 text-xs italic mt-2">{{ form.city_name.errors }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.forecast_date.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ form.forecast_date.label }}:
+                    </label>
+                    <input type="date" name="{{ form.forecast_date.name }}" id="{{ form.forecast_date.id_for_label }}"
+                           value="{{ form.forecast_date.value|date:'Y-m-d'|default:'' }}"
+                           class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight 
+                                  focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent 
+                                  transition duration-300 ease-in-out text-lg">
+                    {% if form.forecast_date.errors %}
+                        <p class="text-red-500 text-xs italic mt-2">{{ form.forecast_date.errors }}</p>
+                    {% endif %}
+                    {% if form.forecast_date.help_text %}
+                        <p class="text-gray-500 text-xs mt-1">{{ form.forecast_date.help_text }}</p>
+                    {% endif %}
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full 
+                                               shadow-lg transition duration-300 ease-in-out transform hover:scale-105 
+                                               focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75">
+                        <i class="fas fa-search-location mr-2"></i> Get Forecast
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Weather Forecast Report Card -->
+        {% if forecast_data %}
+            <div class="bg-gradient-to-br from-indigo-400 to-indigo-600 text-white rounded-xl shadow-xl p-8 w-full max-w-lg 
+                        flex flex-col items-center text-center fade-in-section delay-2">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    Forecast for {{ forecast_data.city }}{% if forecast_data.state %}, {{ forecast_data.state }}{% endif %}{% if forecast_data.country %}, {{ forecast_data.country }}{% endif %}
+                </h2>
+                <p class="text-xl font-semibold mb-4">{{ forecast_data.date }}</p>
+                
+                <div class="text-7xl mb-4">
+                    {# Dynamic Weather Icon based on weather_code #}
+                    {% if forecast_data.weather_code == 0 %}
+                        <i class="fas fa-sun text-yellow-300"></i> {# Clear sky #}
+                    {% elif forecast_data.weather_code in "1,2,3" %} {# Mainly clear, partly cloudy, overcast #}
+                        <i class="fas fa-cloud-sun text-yellow-200"></i>
+                    {% elif forecast_data.weather_code in "45,48" %} {# Fog #}
+                        <i class="fas fa-smog text-gray-300"></i>
+                    {% elif forecast_data.weather_code in "51,53,55" %} {# Drizzle #}
+                        <i class="fas fa-cloud-drizzle text-blue-300"></i>
+                    {% elif forecast_data.weather_code in "61,63,65,80,81,82" %} {# Rain, Rain Showers #}
+                        <i class="fas fa-cloud-showers-heavy text-blue-300"></i>
+                    {% elif forecast_data.weather_code in "66,67" %} {# Freezing Rain #}
+                        <i class="fas fa-cloud-sleet text-blue-300"></i>
+                    {% elif forecast_data.weather_code in "71,73,75" %} {# Snow fall #}
+                        <i class="fas fa-snowflake text-white"></i>
+                    {% elif forecast_data.weather_code == 95 %} {# Thunderstorm #}
+                        <i class="fas fa-cloud-bolt text-gray-300"></i>
+                    {% elif forecast_data.weather_code in "96,99" %} {# Thunderstorm with hail #}
+                        <i class="fas fa-cloud-bolt text-gray-300"></i>
+                    {% else %}
+                        <i class="fas fa-cloud text-gray-300"></i> {# Default cloud icon #}
+                    {% endif %}
+                </div>
+
+                <p class="text-5xl font-extrabold mb-4">
+                    {% if forecast_data.temperature_max and forecast_data.temperature_min %}
+                        {{ forecast_data.temperature_min }}°C - {{ forecast_data.temperature_max }}°C
+                    {% elif forecast_data.temperature_max %}
+                        Max: {{ forecast_data.temperature_max }}°C
+                    {% elif forecast_data.temperature_min %}
+                        Min: {{ forecast_data.temperature_min }}°C
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-lg mb-6">
+                    <div class="flex items-center justify-center bg-indigo-500 rounded-lg p-3">
+                        <i class="fas fa-tint mr-3"></i> <span>Avg Humidity: {{ forecast_data.humidity_mean|default:"N/A" }}%</span>
+                    </div>
+                    <div class="flex items-center justify-center bg-indigo-500 rounded-lg p-3">
+                        <i class="fas fa-cloud-rain mr-3"></i>
+                        <span>
+                            Precipitation:
+                            {% if forecast_data.precipitation_sum is not None %}
+                                {{ forecast_data.precipitation_sum }} mm
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-center bg-indigo-500 rounded-lg p-3 sm:col-span-2">
+                        <i class="fas fa-info-circle mr-3"></i> 
+                        <span>
+                            Condition:
+                            {% if forecast_data.weather_code == 0 %}Clear Sky
+                            {% elif forecast_data.weather_code == 1 %}Mainly Clear
+                            {% elif forecast_data.weather_code == 2 %}Partly Cloudy
+                            {% elif forecast_data.weather_code == 3 %}Overcast
+                            {% elif forecast_data.weather_code == 45 %}Fog
+                            {% elif forecast_data.weather_code == 48 %}Depositing Rime Fog
+                            {% elif forecast_data.weather_code == 51 %}Light Drizzle
+                            {% elif forecast_data.weather_code == 53 %}Moderate Drizzle
+                            {% elif forecast_data.weather_code == 55 %}Dense Drizzle
+                            {% elif forecast_data.weather_code == 56 %}Light Freezing Drizzle
+                            {% elif forecast_data.weather_code == 57 %}Dense Freezing Drizzle
+                            {% elif forecast_data.weather_code == 61 %}Slight Rain
+                            {% elif forecast_data.weather_code == 63 %}Moderate Rain
+                            {% elif forecast_data.weather_code == 65 %}Heavy Rain
+                            {% elif forecast_data.weather_code == 66 %}Light Freezing Rain
+                            {% elif forecast_data.weather_code == 67 %}Heavy Freezing Rain
+                            {% elif forecast_data.weather_code == 71 %}Slight Snow Fall
+                            {% elif forecast_data.weather_code == 73 %}Moderate Snow Fall
+                            {% elif forecast_data.weather_code == 75 %}Heavy Snow Fall
+                            {% elif forecast_data.weather_code == 77 %}Snow Grains
+                            {% elif forecast_data.weather_code == 80 %}Slight Rain Showers
+                            {% elif forecast_data.weather_code == 81 %}Moderate Rain Showers
+                            {% elif forecast_data.weather_code == 82 %}Violent Rain Showers
+                            {% elif forecast_data.weather_code == 85 %}Slight Snow Showers
+                            {% elif forecast_data.weather_code == 86 %}Heavy Snow Showers
+                            {% elif forecast_data.weather_code == 95 %}Thunderstorm
+                            {% elif forecast_data.weather_code == 96 %}Thunderstorm with Slight Hail
+                            {% elif forecast_data.weather_code == 99 %}Thunderstorm with Heavy Hail
+                            {% else %}Unknown
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% elif weather_error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative w-full max-w-md mt-6 shadow-lg fade-in-section delay-2" role="alert">
+                <strong class="font-bold">Forecast Error!</strong>
+                <span class="block sm:inline">{{ weather_error }}</span>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Simple Footer (Consistent with Home Page) -->
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <div class="container mx-auto">
+            <p>&copy; {{ "now"|date:"Y" }} CropCareConnect. All rights reserved.</p>
+            <p class="text-sm mt-2">Designed for the modern farmer.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

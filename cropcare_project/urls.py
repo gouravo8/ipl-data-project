@@ -1,14 +1,21 @@
-# C:\Users\Gourav Rajput\CropCareConnect\CropCareConnect\urls.py
+    # C:\Users\Gourav Rajput\CropCareConnect\cropcare_project\urls.py
 
-from django.contrib import admin
-from django.urls import path, include
-# We'll import your new home_page view here from the agriculture app
-from agriculture import views # Add this line to import views from your agriculture app
+    from django.contrib import admin
+    from django.urls import path, include
+    # No need to import settings or static for production static/media serving here
+    # WhiteNoise handles static files, and for media, a cloud storage solution
+    # is typically used in production (or it's ephemeral on free tiers like Render).
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    # This will be your new landing page / home page
-    path('', views.home_page, name='home'), # NEW: Home page mapping
-    path('agriculture/', include('agriculture.urls')),
-    # Other paths you might have...
-]
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', include('agriculture.urls')),
+    ]
+
+    # In production, static and media files are served differently (e.g., WhiteNoise, S3).
+    # The development server's static/media serving helpers should NOT be used in production.
+    # If you need to serve media files in development from MEDIA_ROOT, you can add:
+    # from django.conf import settings
+    # from django.conf.urls.static import static
+    # if settings.DEBUG:
+    #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
