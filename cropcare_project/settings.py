@@ -115,10 +115,11 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
+            'style': '{', # ADDED THIS LINE
         },
         'simple': {
             'format': '{levelname} {message}',
+            'style': '{', # ADDED THIS LINE
         },
     },
     'filters': {
