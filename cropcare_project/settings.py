@@ -1,8 +1,8 @@
 # C:\Users\Gourav Rajput\CropCareConnect\cropcare_project\settings.py
 
-import os # This line must start at column 1
+import os
 from pathlib import Path
-import dj_database_url
+import dj_database_url # ADD THIS IMPORT
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -107,57 +107,52 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles_dev'
 
-    # C:\Users\Gourav Rajput\CropCareConnect\cropcare_project\settings.py
-
-    # ... (your existing settings code above this) ...
-
-    # Logging configuration for production
-    # This entire LOGGING dictionary definition MUST start at column 1 (no leading spaces).
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-                'style': '{',
-            },
-            'simple': {
-                'format': '{levelname} {message}',
-            },
+# Logging configuration for production
+# This entire LOGGING dictionary definition MUST start at column 1 (no leading spaces).
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
         },
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
-            },
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse',
-            },
+        'simple': {
+            'format': '{levelname} {message}',
         },
-        'handlers': {
-            'console': {
-                'level': 'INFO', # Log INFO level and higher messages
-                'filters': ['require_debug_true'] if DEBUG else ['require_debug_false'],
-                'class': 'logging.StreamHandler', # Sends logs to the console (Render captures this)
-                'formatter': 'verbose' if DEBUG else 'simple',
-            },
-            # You can add other handlers here (e.g., 'mail_admins' for email alerts)
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
         },
-        'loggers': {
-            'django': { # The main Django logger
-                'handlers': ['console'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-            'django.request': { # Logger specifically for HTTP requests (including 500 errors)
-                'handlers': ['console'],
-                'level': 'ERROR', # Only log ERROR level for requests
-                'propagate': False,
-            },
-            '': { # The root logger: catches messages not handled by specific loggers
-                'handlers': ['console'],
-                'level': 'INFO', # Default level for your own application logs
-                'propagate': False,
-            },
-        }
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO', # Log INFO level and higher messages
+            'filters': ['require_debug_true'] if DEBUG else ['require_debug_false'],
+            'class': 'logging.StreamHandler', # Sends logs to the console (Render captures this)
+            'formatter': 'verbose' if DEBUG else 'simple',
+        },
+        # You can add other handlers here (e.g., 'mail_admins' for email alerts)
+    },
+    'loggers': {
+        'django': { # The main Django logger
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': { # Logger specifically for HTTP requests (including 500 errors)
+            'handlers': ['console'],
+            'level': 'ERROR', # Only log ERROR level for requests
+            'propagate': False,
+        },
+        '': { # The root logger: catches messages not handled by specific loggers
+            'handlers': ['console'],
+            'level': 'INFO', # Default level for your own application logs
+            'propagate': False,
+        },
     }
-    
+}
