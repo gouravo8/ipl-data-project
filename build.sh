@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
-    set -e
+set -e
 
-    echo "Running Django database migrations..."
-    python manage.py migrate
+echo "Running Django database migrations..."
+python manage.py migrate
 
-    echo "Loading initial market data..." # This line runs the command
-    python manage.py load_initial_market_data
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
 
-    echo "Collecting static files..."
-    python manage.py collectstatic --noinput
-
-    # Optional: Create a superuser for admin access.
-    # Uncomment and customize this if you want an admin user created on first deploy.
-    # Remember to change 'your_secure_password' to a strong password.
-    # echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'your_secure_password') if not User.objects.filter(username='admin').exists() else ''" | python manage.py shell
-    
+# Optional: Create a superuser for admin access.
+# Uncomment and customize this if you want an admin user created on first deploy.
+# Remember to change 'your_secure_password' to a strong password.
+# echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'your_secure_password') if not User.objects.filter(username='admin').exists() else ''" | python manage.py shell
