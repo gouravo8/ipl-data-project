@@ -2,6 +2,81 @@
 
 from django.db import models
 
+# Model for Market Prices Data
+class MarketPrice(models.Model):
+    state = models.CharField(max_length=100)
+    district = models.CharField(max_length=100)
+    market = models.CharField(max_length=100)
+    commodity = models.CharField(max_length=100)
+    variety = models.CharField(max_length=100)
+    grade = models.CharField(max_length=100, blank=True, null=True)
+    arrival_date = models.DateField()
+    min_price = models.DecimalField(max_digits=10, decimal_places=2)
+    max_price = models.DecimalField(max_digits=10, decimal_places=2)
+    modal_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.CharField(max_length=50, default='Quintal') # e.g., Quintal, Kg
+
+    def __str__(self):
+        return f"{self.commodity} in {self.market}, {self.district}, {self.state} on {self.arrival_date}"
+
+    class Meta:
+        verbose_name_plural = "Market Prices"
+        # Add a unique_together constraint if a combination of these fields should be unique
+        # For example, one commodity price per market per day
+        unique_together = ('state', 'district', 'market', 'commodity', 'arrival_date')
+
+
+# Model for Rainfall Data (if you're using it, otherwise can be removed)
+class RainfallData(models.Model):
+    date = models.DateField(unique=True)
+    rainfall_mm = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return f"Rainfall on {self.date}: {self.rainfall_mm} mm"
+
+    class Meta:
+        verbose_name_plural = "Rainfall Data"
+
+
+# Model for Crop Advisories
+class CropAdvisory(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    date_published = models.DateField(auto_now_add=True)
+    # NEW FIELDS:
+    alert_type = models.CharField(
+        max_length=50,
+        choices=[
+            ('Weather', 'Weather Alert'),
+            ('Pest', 'Pest Outbreak'),
+            ('Disease', 'Disease Warning'),
+            ('Price', 'Price Trend Alert'),
+            ('General', 'General Advisory'),
+            ('Fertilizer', 'Fertilizer Advisory'),
+            ('Irrigation', 'Irrigation Advisory'),
+        ],
+        default='General'
+    )
+    severity = models.CharField(
+        max_length=20,
+        choices=[
+            ('Green', 'Informational'),
+            ('Yellow', 'Warning'),
+            ('Red', 'Critical'),
+        ],
+        default='Green'
+    )
+    location = models.CharField(max_length=100, blank=True, null=True, help_text="Specific location or region for the advisory")
+    
+    def __str__(self):
+        return f"[{self.get_severity_display()}] {self.title} ({self.date_published})"
+
+    class Meta:
+        verbose_name_plural = "Crop Advisories"
+        ordering = ['-date_published', '-severity'] # Order by newest first, then by severity# C:\Users\Gourav Rajput\CropCareConnect\agriculture\models.py
+
+from django.db import models
+
 class MarketPrice(models.Model):
     state = models.CharField(max_length=100)
     district = models.CharField(max_length=100)
