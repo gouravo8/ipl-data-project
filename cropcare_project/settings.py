@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-import dj_database_url # ADD THIS IMPORT
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'agriculture',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -115,11 +116,11 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{', # ADDED THIS LINE
+            'style': '{',
         },
         'simple': {
             'format': '{levelname} {message}',
-            'style': '{', # ADDED THIS LINE
+            'style': '{',
         },
     },
     'filters': {
@@ -132,28 +133,44 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO', # Log INFO level and higher messages
+            'level': 'INFO',
             'filters': ['require_debug_true'] if DEBUG else ['require_debug_false'],
-            'class': 'logging.StreamHandler', # Sends logs to the console (Render captures this)
+            'class': 'logging.StreamHandler',
             'formatter': 'verbose' if DEBUG else 'simple',
         },
-        # You can add other handlers here (e.g., 'mail_admins' for email alerts)
     },
     'loggers': {
-        'django': { # The main Django logger
+        'django': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
-        'django.request': { # Logger specifically for HTTP requests (including 500 errors)
+        'django.request': {
             'handlers': ['console'],
-            'level': 'ERROR', # Only log ERROR level for requests
+            'level': 'ERROR',
             'propagate': False,
         },
-        '': { # The root logger: catches messages not handled by specific loggers
+        '': {
             'handlers': ['console'],
-            'level': 'INFO', # Default level for your own application logs
+            'level': 'INFO',
             'propagate': False,
         },
     }
+}
+# Celery Configuration
+# Use environment variable for Redis URL, falling back to local for development
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+
+# Celery Beat Schedule
+CELERY_BEAT_SCHEDULE = {
+    'update-daily-prices-at-midnight': {
+        'task': 'agriculture.tasks.update_daily_market_prices',
+        'schedule': 86400.0,
+        'args': (),
+    },
 }
