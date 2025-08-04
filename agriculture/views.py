@@ -93,7 +93,7 @@ def market_price_list(request):
     if start_date:
         filters &= Q(arrival_date__gte=start_date) # Greater than or equal to start_date
     if end_date:
-        filters &= Q(arrival_date__lte=end_date)   # Less than or equal to end_date
+        filters &= Q(arrival_date__lte=end_date)  # Less than or equal to end_date
 
     # Apply all combined filters
     filtered_prices = all_prices.filter(filters) # Renamed to filtered_prices for clarity
@@ -197,7 +197,7 @@ def market_price_list(request):
 
         # --- Chart Data for Template ---
         'chart_labels': json.dumps(chart_labels), # Pass as JSON string
-        'chart_data': json.dumps(chart_data),   # Pass as JSON string
+        'chart_data': json.dumps(chart_data),  # Pass as JSON string
         'chart_commodity': chart_commodity,
         'chart_market': chart_market,
         'chart_state': chart_state,
@@ -209,7 +209,7 @@ def market_price_list(request):
 def crop_advisory_list(request):
     # Fetch all crop advisories, ordered by date published (newest first)
     # and then by severity (Red > Yellow > Green)
-    advisories = CropAdvisory.objects.all().order_by('-date_published', '-severity')
+    advisories = CropAdvisory.objects.all().order_by('-published_month', '-severity') # CORRECTED: Using published_month
 
     # --- SIMULATED ADVISORY GENERATION (FOR DEMO PURPOSES) ---
     # In a real application, these would come from external APIs or a data pipeline.
@@ -217,6 +217,11 @@ def crop_advisory_list(request):
     if not advisories.exists():
         # Example: Generate a few sample advisories if none exist
         from datetime import date, timedelta
+        from django.utils import timezone # Use timezone.now() for datetime
+        
+        # Get the current month and year to use for published_month
+        now = timezone.now()
+        
         if not CropAdvisory.objects.filter(title="Heavy Rainfall Expected").exists():
             CropAdvisory.objects.create(
                 title="Heavy Rainfall Expected",
@@ -225,7 +230,8 @@ def crop_advisory_list(request):
                 severity="Red",
                 location="Central Districts",
                 crop_name="General",
-                advisory_type="GENERAL"
+                advisory_type="GENERAL",
+                published_month=now.month # CORRECTED: Use published_month
             )
         if not CropAdvisory.objects.filter(title="Pest Alert: Aphid Infestation").exists():
             CropAdvisory.objects.create(
@@ -235,7 +241,8 @@ def crop_advisory_list(request):
                 severity="Yellow",
                 location="Southern Regions",
                 crop_name="Paddy",
-                advisory_type="PEST"
+                advisory_type="PEST",
+                published_month=now.month # CORRECTED: Use published_month
             )
         if not CropAdvisory.objects.filter(title="Wheat Price Drop Advisory").exists():
             CropAdvisory.objects.create(
@@ -245,7 +252,8 @@ def crop_advisory_list(request):
                 severity="Yellow",
                 location="National Markets",
                 crop_name="Wheat",
-                advisory_type="GENERAL" # Or a new 'PRICE' advisory_type if you add it to choices
+                advisory_type="GENERAL", # Or a new 'PRICE' advisory_type if you add it to choices
+                published_month=now.month # CORRECTED: Use published_month
             )
         if not CropAdvisory.objects.filter(title="General Advisory: Soil Health").exists():
             CropAdvisory.objects.create(
@@ -255,7 +263,8 @@ def crop_advisory_list(request):
                 severity="Green",
                 location="All Regions",
                 crop_name="General",
-                advisory_type="BEST_PRACTICE"
+                advisory_type="BEST_PRACTICE",
+                published_month=now.month # CORRECTED: Use published_month
             )
         if not CropAdvisory.objects.filter(title="Irrigation Tips for Dry Spell").exists():
             CropAdvisory.objects.create(
@@ -265,10 +274,11 @@ def crop_advisory_list(request):
                 severity="Green",
                 location="Arid Zones",
                 crop_name="General",
-                advisory_type="BEST_PRACTICE"
+                advisory_type="BEST_PRACTICE",
+                published_month=now.month # CORRECTED: Use published_month
             )
         # Re-fetch advisories after creating samples
-        advisories = CropAdvisory.objects.all().order_by('-date_published', '-severity')
+        advisories = CropAdvisory.objects.all().order_by('-published_month', '-severity') # CORRECTED: Re-fetch with new ordering
     # --- END SIMULATED ADVISORY GENERATION ---
 
     # Filter logic for advisories (by type)
@@ -353,7 +363,7 @@ def realtime_weather_view(request):
                         if weather_data['weather_code'] in [51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82] or \
                            (weather_data['precipitation'] is not None and weather_data['precipitation'] > 0) or \
                            (weather_data['rain'] is not None and weather_data['rain'] > 0):
-                           realtime_rain_status = True
+                            realtime_rain_status = True
                         
                         # --- Step 2.4: Simulate Model's Prediction ---
                         # IMPORTANT: This is a placeholder. In a real scenario, you would
