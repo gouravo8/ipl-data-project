@@ -1,0 +1,77 @@
+[
+{
+  "model": "agriculture.cropadvisory",
+  "pk": 1,
+  "fields": {
+    "crop_name": "Cotton",
+    "advisory_type": "DISEASE",
+    "title": "Stem Rot Precaution for Cotton",
+    "description": "Recent humid conditions combined with high temperatures have increased the risk of fungal diseases like stem rot in cotton crops in Maharashtra.",
+    "recommendation": "Improve field drainage and avoid waterlogging. Apply a recommended fungicide as a preventive measure. Remove and destroy any infected plants to prevent the spread of the disease.",
+    "published_month": "August",
+    "alert_type": "Disease",
+    "severity": "Red",
+    "location": "Maharashtra, India"
+  }
+},
+{
+  "model": "agriculture.cropadvisory",
+  "pk": 2,
+  "fields": {
+    "crop_name": "Rice",
+    "advisory_type": "PEST",
+    "title": "Early Fall Armyworm Detection in Rice",
+    "description": "Reports of Fall Armyworm larvae have been confirmed in several fields in Uttar Pradesh. These pests can cause significant damage to rice crops.",
+    "recommendation": "Conduct regular scouting for damaged leaves or visible larvae. If detected, apply an approved insecticide or bio-pesticide to control the population and prevent widespread infestation.",
+    "published_month": "August",
+    "alert_type": "Pest",
+    "severity": "Yellow",
+    "location": "Uttar Pradesh, India"
+  }
+},
+{
+  "model": "agriculture.cropadvisory",
+  "pk": 3,
+  "fields": {
+    "crop_name": "Wheat",
+    "advisory_type": "GENERAL",
+    "title": "Intense Heatwave Alert for Wheat Crops",
+    "description": "A severe heatwave is predicted to affect Punjab for the next 72 hours. High temperatures can cause heat stress in wheat plants and accelerate water loss from the soil.",
+    "recommendation": "Increase irrigation frequency during cooler hours (early morning or late evening). Use mulching to retain soil moisture and protect roots. Monitor crops for wilting and leaf scorch.",
+    "published_month": "August",
+    "alert_type": "Weather",
+    "severity": "Yellow",
+    "location": "Punjab, India"
+  }
+},
+{
+  "model": "agriculture.cropadvisory",
+  "pk": 4,
+  "fields": {
+    "crop_name": "Chickpea",
+    "advisory_type": "GENERAL",
+    "title": "Market Price Fluctuation for Chickpea",
+    "description": "The market for chickpea in Rajasthan is currently experiencing moderate fluctuations due to global supply and demand factors. Prices are expected to be volatile over the next few weeks.",
+    "recommendation": "Farmers holding stock should monitor daily market prices closely. Consider selling a portion of your stock if the price meets your target, and hold the remainder for a potential price increase.",
+    "published_month": "August",
+    "alert_type": "Price",
+    "severity": "Green",
+    "location": "Rajasthan, India"
+  }
+},
+{
+  "model": "agriculture.cropadvisory",
+  "pk": 5,
+  "fields": {
+    "crop_name": "Sugarcane",
+    "advisory_type": "BEST_PRACTICE",
+    "title": "Post-Harvest Soil Preparation for Sugarcane",
+    "description": "As the current harvest for sugarcane in Karnataka nears completion, it's crucial to replenish the soil's nutrients for the next cycle.",
+    "recommendation": "After harvesting, collect soil samples and get them tested. Based on the results, apply organic manure or balanced fertilizers to ensure optimal soil health for the next planting season.",
+    "published_month": "August",
+    "alert_type": "Irrigation",
+    "severity": "Green",
+    "location": "Karnataka, India"
+  }
+}
+]
